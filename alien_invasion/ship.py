@@ -14,29 +14,25 @@ class Ship():
         self.rect = self.image.get_rect()
 
         # Каждый новый корабль появляется у нижнего края экрана.
-        self.rect.midbottom = self.screen_rect.midbottom
+        self.rect.midleft = self.screen_rect.midleft
 
         # Сохранение вещественной координаты центра корабля
-        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
 
         # Флаги перемещения
-        self.moving_right = False
-        self.moving_left = False
+        self.moving_top = False
+        self.moving_bottom = False
 
     def update(self):
         """Обновляет позицию корабля с учетом флагов."""
-        # Обновляется атрибут x, не rect.
-        if self.moving_right:
-            self.x += self.settings.ship_speed
-        if self.moving_right and self.rect.right >= self.screen_rect.right:
-            self.x = 0
-        if self.moving_left:
-            self.x -= self.settings.ship_speed
-        if self.moving_left and self.rect.left <= 0:
-            self.x = self.screen_rect.right
+        # Обновляется атрибут y, не rect.
+        if self.moving_top and self.rect.top > self.screen_rect.top:
+            self.y -= self.settings.ship_speed
+        if self.moving_bottom and self.rect.bottom < self.screen_rect.bottom:
+            self.y += self.settings.ship_speed
 
-        # Обновление атрибута rect на основании self.x
-        self.rect.x = self.x
+        # Обновление атрибута rect на основании self.y
+        self.rect.y = self.y
 
     def blitme(self):
         """Рисует корабль в текущей позиции."""
