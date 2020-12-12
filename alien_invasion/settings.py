@@ -9,7 +9,7 @@ class Settings():
 
         # Параметры экрана
         self.bg_color = (230, 230, 230)
-        
+                
         # Настройки корабля
         self.ship_speed = 5
 
