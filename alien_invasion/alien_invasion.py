@@ -50,7 +50,7 @@ class AlienInvasion:
             self._fire_bullet()
         elif event.key == pygame.K_q:
                 sys.exit()
-                q
+                
     def _check_keyup_events(self, event):
         """Реагирует на отпускание клавиш"""
         if event.key == pygame.K_RIGHT:
