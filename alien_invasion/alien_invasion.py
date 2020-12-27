@@ -1,7 +1,9 @@
 import sys
+from time import sleep
 
 import pygame
 from settings import Settings
+from game_stats import GameStats
 from ship import Ship
 from bullet import Bullet
 from alien import Alien
@@ -16,6 +18,10 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height        
+        
+        # Создание экземпляра для хранения игровой статистики.
+        self.stats = GameStats(self)
+
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -57,6 +63,22 @@ class AlienInvasion:
             self.ship.moving_right = False
         if event.key == pygame.K_LEFT:
             self.ship.moving_left = False
+
+    def _ship_hit(self):
+        """Обрабатывает столкновение корабля с пришельцем."""
+        # Уменьшение ships_left.
+        self.stats.ships_left -= 1
+        
+        # Очистка списков пришельцев и снарядов.
+        self.aliens.empty()
+        self.bullets.empty()
+
+        # Создание нового флота и размещение корабля в центре.
+        self._create_fleet()
+        self.ship.center_ship()
+
+        # Пауза.
+        sleep(0.5)    
 
     def _fire_bullet(self):
         """Содание нового снаряда и включение его в группу bullets."""
@@ -119,6 +141,22 @@ class AlienInvasion:
         """Обновляет позиции всех пришельцев во флоте."""
         self._check_fleet_edges()
         self.aliens.update()
+
+        # Проверка коллизии "пришелец - корабль".
+        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+            self._ship_hit()
+
+        # Проверить, добрались ли пришельцы до нижнего края экрна.
+        self._check_aliens_bottom()
+    
+    def _check_aliens_bottom(self):
+        """Проверяет, добрались ли пришельцы до нижнего края экрана."""
+        screen_rect = self.screen.get_rect()
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= screen_rect.bottom:
+                # Происходит тоже, что при столкновении с кораблем.
+                self._ship_hit()
+                break
 
     def _check_fleet_edges(self):
         """Реагирует на достижение пришельцем края экрана."""
